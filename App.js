@@ -10,16 +10,25 @@ import { Global } from './Global';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Ionicons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 import { Main } from './src/screens/Main';
+import { Restorants } from './src/screens/Restorants'
+import { LoginRegister } from './src/screens/LoginRegister'
+import { RestoranScore } from './src/screens/RestoranScore'
+import { AIReport } from './src/screens/AIReport'
+import { Profile } from './src/screens/Profile'
+
 import { CustomDrawerContent } from './src/components/CustomDrawerContent'
-import {Color} from './src/Helper/Color'
+import { Color } from './src/Helper/Color'
 
 // Initialize Firebase
 
 
 const Drawer = createDrawerNavigator();
+const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
   const [todos, setTodos] = React.useState([]);
@@ -27,10 +36,12 @@ export default function App() {
 
 
 
+
   const AuthStack = createStackNavigator();
   const AuthStackScreen = () => (
     <AuthStack.Navigator
       mode={"modal"}
+      initialRouteName="Main"
       screenOptions={{
         headerShown: false,
       }}>
@@ -38,15 +49,70 @@ export default function App() {
       <AuthStack.Screen
         name={"Main"}
         component={Main}
-
-        
       />
+
+      <AuthStack.Screen
+        name={"Restorants"}
+        component={Restorants}
+      />
+
+      <AuthStack.Screen
+        name={"RestoranScore"}
+        component={RestoranScore}
+      />
+
     </AuthStack.Navigator>
   );
 
-  React.useEffect(() => {
+  const TabScreen = () => {
+    return (
+      <Tab.Navigator
+        initialRouteName="Auth"
+        activeTintColor="#d07440"
+        tabBarOptions={{
+          activeTintColor: '#d07440',
+        }}
+        barStyle={{
+          backgroundColor: '#853203'
+        }}
 
-  });
+        options={{
+          keyboardHidesTabBar: true,
+          tabBarOptions: {
+            activeTintColor: '#d07440',
+            showLabel: true,
+          },
+        }}
+      >
+
+        <Tab.Screen
+          name={"Auth"}
+          component={AuthStackScreen}
+          options={{
+            title: "Anasayfa",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="home" size={18} color={color} />
+            )
+          }}
+        />
+
+
+        <Tab.Screen
+          name={"Profil"}
+          component={Profile}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <FontAwesome name="user" size={24} color={color} style={{ alignSelf: 'center' }} />
+            )
+          }}
+        />
+
+
+      </Tab.Navigator>
+    );
+  }
+
+
 
   return (
 
@@ -65,36 +131,95 @@ export default function App() {
         }}
         drawerType="front"
       >
-        <Drawer.Screen
-         name="Auth"
-         component={AuthStackScreen}
-         options={{
-          headerShown: true,
-          headerTitle: () => (
-            <Text style={{
-              fontSize: 16,
-              fontWeight: 'bold'
-            }}>Restoran Rapor</Text>
-          ),
-          headerStyle: {
-            backgroundColor: '#fff',
 
-          },
-          headerTitleStyle: {
-            fontWeight: '500',
-            fontSize: 24
-          },
-          headerRight: () => (
-            <TouchableOpacity
-              style={{ marginRight: 20 }}>
-              <Ionicons name="cog" size={32} color="#222" />
-            </TouchableOpacity>
-          ),
-        }}>
+
+        <Drawer.Screen
+          name="Tab"
+          component={TabScreen}
+          options={{
+            headerShown: true,
+            headerTitle: () => (
+              <Text style={{
+                fontSize: 16,
+                fontWeight: 'bold'
+              }}>Restoran Rapor</Text>
+            ),
+            headerStyle: {
+              backgroundColor: '#fff',
+
+            },
+            headerTitleStyle: {
+              fontWeight: '500',
+              fontSize: 24
+            },
+            headerRight: () => (
+              <TouchableOpacity
+                style={{ marginRight: 20 }}>
+                <Ionicons name="cog" size={32} color="#222" />
+              </TouchableOpacity>
+            ),
+          }}>
 
         </Drawer.Screen>
 
-       
+        <Drawer.Screen
+          options={{
+            headerShown: true,
+            headerTitle: () => (
+              <Text style={{
+                fontSize: 16,
+                fontWeight: 'bold'
+              }}>Restoran Rapor</Text>
+            ),
+            headerStyle: {
+              backgroundColor: '#fff',
+
+            },
+            headerTitleStyle: {
+              fontWeight: '500',
+              fontSize: 24
+            },
+            headerRight: () => (
+              <TouchableOpacity
+                style={{ marginRight: 20 }}>
+                <Ionicons name="cog" size={32} color="#222" />
+              </TouchableOpacity>
+            ),
+          }}
+          name="LoginRegister"
+          component={LoginRegister}>
+
+        </Drawer.Screen>
+
+        <Drawer.Screen
+          options={{
+            headerShown: true,
+            headerTitle: () => (
+              <Text style={{
+                fontSize: 16,
+                fontWeight: 'bold'
+              }}>Restoran Rapor</Text>
+            ),
+            headerStyle: {
+              backgroundColor: '#fff',
+
+            },
+            headerTitleStyle: {
+              fontWeight: '500',
+              fontSize: 24
+            },
+            headerRight: () => (
+              <TouchableOpacity
+                style={{ marginRight: 20 }}>
+                <Ionicons name="cog" size={32} color="#222" />
+              </TouchableOpacity>
+            ),
+          }}
+          name="AIReport"
+          component={AIReport}>
+
+        </Drawer.Screen>
+
       </Drawer.Navigator>
     </NavigationContainer>
 

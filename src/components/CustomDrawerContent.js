@@ -1,6 +1,6 @@
-import React from 'react'
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native'
-import { Ionicons } from '@expo/vector-icons';
+import React, { useCallback } from 'react'
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Linking } from 'react-native'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
     DrawerContentScrollView,
     DrawerItemList,
@@ -40,6 +40,32 @@ const drawerItemList = [
 ]
 
 export function CustomDrawerContent(props, navigation) {
+
+    const OpenURLButton = ({ url, children }) => {
+        const handlePress = useCallback(async () => {
+            // Checking if the link is supported for links with custom URL scheme.
+            const supported = await Linking.canOpenURL(url);
+
+            if (supported) {
+                // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+                // by some browser in the mobile
+                await Linking.openURL(url);
+            } else {
+                Alert.alert(`Don't know how to open this URL: ${url}`);
+            }
+        }, [url]);
+
+        return <TouchableOpacity
+            onPress={() => {
+                handlePress()
+            }}
+            style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialCommunityIcons name="web" size={24} color="black" />
+            <Text style={{ fontSize: 14, marginLeft: 5, alignSelf: 'center' }}>Web sitemizi ziyaret etmek için tıklayınız.</Text>
+        </TouchableOpacity>;
+    };
+
+
     return (
         <ScrollView style={{ backgroundColor: '#fff' }}>
             <View style={styles.ProfileContainer}>
@@ -65,7 +91,14 @@ export function CustomDrawerContent(props, navigation) {
                     drawerItemList.map((item, index) => (
                         <ListItem key={index} bottomDivider
                             onPress={() => {
-                                props.navigation.navigate('Main')
+                                if (item.name === "Anasayfa") {
+                                    props.navigation.navigate('Main')
+                                }
+                                else {
+                                    props.navigation.navigate('Restorants', {
+                                        name: item.name
+                                    })
+                                }
                             }}>
                             <ListItem.Content>
                                 <ListItem.Title>{item.name}</ListItem.Title>
@@ -80,19 +113,33 @@ export function CustomDrawerContent(props, navigation) {
                 style={styles.LoginRegisterContainer}>
                 <View style={{ width: '100%' }}>
                     <TouchableOpacity
+                        onPress={() => {
+                            props.navigation.navigate('LoginRegister', {
+                                name: 'Login'
+                            })
+                        }}
                         style={styles.LoginRegisterButton}>
-                        <Text style={[styles.LoginRegisterButtonText, {color:'white'}]}>Giriş Yap</Text>
+                        <Text style={[styles.LoginRegisterButtonText, { color: 'white' }]}>Giriş Yap</Text>
 
                     </TouchableOpacity>
                 </View>
 
                 <View style={{ width: '100%', }}>
                     <TouchableOpacity
-                        style={[styles.LoginRegisterButton, 
-                            {backgroundColor:'#fff', borderWidth:2, borderColor:'#d07440', borderRadius:8}]}>
-                        <Text style={[styles.LoginRegisterButtonText, {color:'#d07440'}]}>Kayıt Ol</Text>
+                        onPress={() => {
+                            props.navigation.navigate('LoginRegister', {
+                                name: 'Register'
+                            })
+                        }}
+                        style={[styles.LoginRegisterButton,
+                        { backgroundColor: '#fff', borderWidth: 2, borderColor: '#d07440', borderRadius: 8 }]}>
+                        <Text style={[styles.LoginRegisterButtonText, { color: '#d07440' }]}>Kayıt Ol</Text>
                     </TouchableOpacity>
                 </View>
+            </View>
+
+            <View style={{ padding: 15, width: '100%' }}>
+                <OpenURLButton url="https://restaurantrate-2d435.web.app/" />
             </View>
 
         </ScrollView>
@@ -117,7 +164,7 @@ const styles = StyleSheet.create({
     DrawerItemContainer: {
         marginTop: 30
     },
-    LoginRegisterContainer:{
+    LoginRegisterContainer: {
         marginVertical: 20,
     },
     LoginRegisterButton: {
@@ -125,12 +172,12 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         margin: 10,
         padding: 10
-      },
-      LoginRegisterButtonText: {
+    },
+    LoginRegisterButtonText: {
         textAlign: 'center',
         fontSize: 16,
         fontWeight: '500',
         color: '#352c2a'
-      }
+    }
 
 })

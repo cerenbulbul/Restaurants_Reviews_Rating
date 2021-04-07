@@ -19,7 +19,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 
-export function Main() {
+export function Main({navigation}) {
 
     const [searchValue, setSearchValue] = React.useState('');
     const [getLoader, setLoader] = React.useState(false);
@@ -131,11 +131,23 @@ export function Main() {
                 </Text>
 
                 <View style={styles.ButtonContainer}>
-                    <TouchableOpacity style={styles.ButtonStyleAIPart}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.navigate('LoginRegister', {
+                                name: 'Login'
+                            })
+                        }}
+                        style={styles.ButtonStyleAIPart}>
                         <Text style={styles.ButtonTextStyleAIPart}>Giriş Yap</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.ButtonStyleAIPart, { backgroundColor: '#fff', borderWidth: 2, borderColor: '#d07440' }]}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.navigate('LoginRegister', {
+                                name: 'Register'
+                            })
+                        }}
+                        style={[styles.ButtonStyleAIPart, { backgroundColor: '#fff', borderWidth: 2, borderColor: '#d07440' }]}>
                         <Text style={[styles.ButtonTextStyleAIPart, { color: '#d07440' }]}>Kayıt Ol</Text>
                     </TouchableOpacity>
                 </View>
