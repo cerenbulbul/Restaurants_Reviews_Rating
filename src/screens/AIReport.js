@@ -3,6 +3,40 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, Tex
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { List } from 'react-native-paper';
 
+const KategoriData = [
+    {
+        id: 0,
+        name: "Tatlıcı"
+    },
+    {
+        id: 1,
+        name: "Bar"
+    },
+    {
+        id: 2,
+        name: "Meyhane"
+    },
+    {
+        id: 3,
+        name: "Restoran"
+    },
+    {
+        id: 4,
+        name: "Kafe"
+    },
+    {
+        id: 5,
+        name: "Ye ve Kalk"
+    },
+]
+
+const SemtData = [
+    {
+        id:0,
+        name:''
+    }
+]
+
 export function AIReport() {
 
     const [getRestoranIsmi, setRestoranIsmi] = React.useState();
@@ -44,8 +78,14 @@ export function AIReport() {
                         theme={{ colors: { primary: '#d07440' } }}
                         left={() => <MaterialIcons name="category" size={24} color="black" />}
                     >
-                        <List.Item title="First item" />
-                        <List.Item title="Second item" />
+                        {KategoriData.map((item, index) => (
+                            <List.Item
+                                title={item.name}
+                                key={index}
+                                onPress={() => {
+                                    alert(item.name)
+                                }} />
+                        ))}
                     </List.Accordion>
 
                     <List.Accordion
