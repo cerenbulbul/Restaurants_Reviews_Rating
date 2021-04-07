@@ -61,7 +61,24 @@ export default function App() {
         component={RestoranScore}
       />
 
+      <AuthStack.Screen
+        name={"AIReport"}
+        component={AIReport}
+      />
+
     </AuthStack.Navigator>
+  );
+
+  const ProfileStack = createStackNavigator();
+  const ProfileStackScreen = () => (
+    <ProfileStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <ProfileStack.Screen name={"Profil"} component={Profile} />
+      <ProfileStack.Screen name={"AIReport"} component={AIReport} />
+    </ProfileStack.Navigator>
+
   );
 
   const TabScreen = () => {
@@ -99,7 +116,7 @@ export default function App() {
 
         <Tab.Screen
           name={"Profil"}
-          component={Profile}
+          component={ProfileStackScreen}
           options={{
             tabBarIcon: ({ color }) => (
               <FontAwesome name="user" size={24} color={color} style={{ alignSelf: 'center' }} />
@@ -191,34 +208,7 @@ export default function App() {
 
         </Drawer.Screen>
 
-        <Drawer.Screen
-          options={{
-            headerShown: true,
-            headerTitle: () => (
-              <Text style={{
-                fontSize: 16,
-                fontWeight: 'bold'
-              }}>Restoran Rapor</Text>
-            ),
-            headerStyle: {
-              backgroundColor: '#fff',
 
-            },
-            headerTitleStyle: {
-              fontWeight: '500',
-              fontSize: 24
-            },
-            headerRight: () => (
-              <TouchableOpacity
-                style={{ marginRight: 20 }}>
-                <Ionicons name="cog" size={32} color="#222" />
-              </TouchableOpacity>
-            ),
-          }}
-          name="AIReport"
-          component={AIReport}>
-
-        </Drawer.Screen>
 
       </Drawer.Navigator>
     </NavigationContainer>
