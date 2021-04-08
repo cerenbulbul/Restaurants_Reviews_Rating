@@ -12,7 +12,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, FontAwesome,Entypo } from '@expo/vector-icons';
 
 import { Main } from './src/screens/Main';
 import { Restorants } from './src/screens/Restorants'
@@ -49,6 +49,7 @@ export default function App() {
       <AuthStack.Screen
         name={"Main"}
         component={Main}
+        initialParams={{isLogin:false}}
       />
 
       <AuthStack.Screen
@@ -59,11 +60,6 @@ export default function App() {
       <AuthStack.Screen
         name={"RestoranScore"}
         component={RestoranScore}
-      />
-
-      <AuthStack.Screen
-        name={"AIReport"}
-        component={AIReport}
       />
 
     </AuthStack.Navigator>
@@ -115,11 +111,13 @@ export default function App() {
 
 
         <Tab.Screen
-          name={"Profil"}
-          component={ProfileStackScreen}
+          name={"AIReport"}
+          component={AIReport}
+          initialParams={{isLogin:false}}
           options={{
+            title:"Yapayzeka Rapor",
             tabBarIcon: ({ color }) => (
-              <FontAwesome name="user" size={24} color={color} style={{ alignSelf: 'center' }} />
+              <Entypo name="bar-graph" size={24} color={color} />
             )
           }}
         />

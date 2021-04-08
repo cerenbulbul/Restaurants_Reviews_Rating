@@ -4,8 +4,12 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 export function Profile({ navigation }) {
     return (
         <View style={styles.Container}>
-            <Text>Profile</Text>
-            <TouchableOpacity onPress={() => {
+            <View style={styles.CardContainer}>
+                <Text style={styles.CarContainerTitle}>Ceren Bulbul</Text>
+            </View>
+            
+            <TouchableOpacity 
+            onPress={() => {
                 navigation.navigate('AIReport')
             }}>
                 <Text>AI Report</Text>
@@ -19,5 +23,16 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         backgroundColor: '#fff'
+    },
+    CardContainer:{
+        width:'80%',
+        padding:20,
+        alignSelf:'center',
+        marginTop:20
+    },
+    CarContainerTitle:{
+        textAlign:'center',
+        fontSize:18,
+        fontWeight:'bold'
     }
 })

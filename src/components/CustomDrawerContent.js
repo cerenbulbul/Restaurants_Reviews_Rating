@@ -7,6 +7,7 @@ import {
 } from '@react-navigation/drawer';
 import ColorHelper from '../Helper/Color'
 import { ListItem } from 'react-native-elements'
+import { Global } from '../../Global';
 
 const drawerItemList = [
     {
@@ -109,34 +110,54 @@ export function CustomDrawerContent(props, navigation) {
                 }
             </View>
 
-            <View
-                style={styles.LoginRegisterContainer}>
-                <View style={{ width: '100%' }}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            props.navigation.navigate('LoginRegister', {
-                                name: 'Login'
-                            })
-                        }}
-                        style={styles.LoginRegisterButton}>
-                        <Text style={[styles.LoginRegisterButtonText, { color: 'white' }]}>Giriş Yap</Text>
+            {Global.isLogin ?
+                <View
+                    style={styles.LoginRegisterContainer}>
+                    <View style={{ width: '100%' }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                props.navigation.navigate('LoginRegister', {
+                                    name: 'Login'
+                                })
+                            }}
+                            style={styles.LoginRegisterButton}>
+                            <Text style={[styles.LoginRegisterButtonText, { color: 'white' }]}>Çıkış Yap</Text>
 
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    </View>
                 </View>
+                :
+                <View
+                    style={styles.LoginRegisterContainer}>
+                    <View style={{ width: '100%' }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                props.navigation.navigate('LoginRegister', {
+                                    name: 'Login'
+                                })
+                            }}
+                            style={styles.LoginRegisterButton}>
+                            <Text style={[styles.LoginRegisterButtonText, { color: 'white' }]}>Giriş Yap</Text>
 
-                <View style={{ width: '100%', }}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            props.navigation.navigate('LoginRegister', {
-                                name: 'Register'
-                            })
-                        }}
-                        style={[styles.LoginRegisterButton,
-                        { backgroundColor: '#fff', borderWidth: 2, borderColor: '#d07440', borderRadius: 8 }]}>
-                        <Text style={[styles.LoginRegisterButtonText, { color: '#d07440' }]}>Kayıt Ol</Text>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{ width: '100%', }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                props.navigation.navigate('LoginRegister', {
+                                    name: 'Register'
+                                })
+                            }}
+                            style={[styles.LoginRegisterButton,
+                            { backgroundColor: '#fff', borderWidth: 2, borderColor: '#d07440', borderRadius: 8 }]}>
+                            <Text style={[styles.LoginRegisterButtonText, { color: '#d07440' }]}>Kayıt Ol</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            }
+
+
 
             <View style={{ padding: 15, width: '100%' }}>
                 <OpenURLButton url="https://restaurantrate-2d435.web.app/" />

@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image, TextInput } from 'react-native'
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { List } from 'react-native-paper';
+import { Global } from '../../Global';
 
 const KategoriData = [
     {
@@ -32,13 +33,118 @@ const KategoriData = [
 
 const SemtData = [
     {
-        id:0,
-        name:''
-    }
+        id: 0,
+        name: 'Antalya Merkez'
+    },
+    {
+        id: 1,
+        name: 'Muratpaşa'
+    },
+    {
+        id: 2,
+        name: 'Lara'
+    },
+    {
+        id: 3,
+        name: 'Kaş'
+    },
+    {
+        id: 4,
+        name: 'Manavgat'
+    },
+    {
+        id: 5,
+        name: 'Altınkum'
+    },
+    {
+        id: 6,
+        name: 'Şirinyalı'
+    },
+    {
+        id: 7,
+        name: 'Alanya'
+    },
+    {
+        id: 8,
+        name: 'Zümrütova'
+    },
+    {
+        id: 9,
+        name: 'Doğu Garajı'
+    },
+    {
+        id: 10,
+        name: 'Kültür'
+    },
+    {
+        id: 11,
+        name: 'Özgürlük'
+    },
+    {
+        id: 12,
+        name: 'Kemer'
+    },
+    {
+        id: 13,
+        name: 'Kumluca'
+    },
+    {
+        id: 14,
+        name: 'Kale'
+    },
+    {
+        id: 15,
+        name: 'Fener'
+    },
+    {
+        id: 16,
+        name: 'Serik'
+    },
+    {
+        id: 17,
+        name: 'Özdilek'
+    },
+    {
+        id: 18,
+        name: 'Finike'
+    },
+    {
+        id: 19,
+        name: 'Alanya'
+    },
+    {
+        id: 20,
+        name: 'Korkuteli'
+    },
+    {
+        id: 21,
+        name: 'Kepez'
+    },
+    {
+        id: 22,
+        name: 'Demre'
+    },
+    {
+        id: 23,
+        name: 'Belek'
+    },
+    {
+        id: 12,
+        name: 'Döşemealtı'
+    },
+    {
+        id: 24,
+        name: 'Beldibi'
+    },
+    {
+        id: 25,
+        name: 'Gazipaşa'
+    },
 ]
 
-export function AIReport() {
+export function AIReport({route, navigation }) {
 
+    const {isLogin} = route.params;
     const [getRestoranIsmi, setRestoranIsmi] = React.useState();
     const [getKategori, setKategori] = React.useState("Kategori Seçiniz");
     const [getSemt, setSemt] = React.useState("Semt Seçiniz");
@@ -60,51 +166,87 @@ export function AIReport() {
                 Restoran Bilgilerini Gör
             </Text>
 
-            <ScrollView style={{ marginTop: 50 }}>
-                <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
-                    <Ionicons name="restaurant" size={24} color="black" style={{ alignSelf: 'center' }} />
-                    <TextInput
-                        style={styles.InputStyle}
-                        placeholder={"Restoran ismi giriniz"}
-                        name={"name"}
-                        keyboardType="email-address"
-                        value={getRestoranIsmi}
-                        onChangeText={setRestoranIsmi}
-                    />
+            {isLogin ?
+                <ScrollView style={{ marginTop: 50 }}>
+                    <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
+                        <Ionicons name="restaurant" size={24} color="black" style={{ alignSelf: 'center' }} />
+                        <TextInput
+                            style={styles.InputStyle}
+                            placeholder={"Restoran ismi giriniz"}
+                            name={"restoran"}
+                            value={getRestoranIsmi}
+                            onChangeText={setRestoranIsmi}
+                        />
+                    </View>
+                    <List.Section style={{ marginLeft: 20 }}>
+                        <List.Accordion
+                            title={getKategori}
+                            theme={{ colors: { primary: '#d07440' } }}
+                            left={() => <MaterialIcons name="category" size={24} color="black" />}
+                        >
+                            {KategoriData.map((item, index) => (
+                                <List.Item
+                                    title={item.name}
+                                    key={index}
+                                    onPress={() => {
+                                        alert(item.name)
+                                    }} />
+                            ))}
+                        </List.Accordion>
+
+                        <List.Accordion
+                            title={getSemt}
+                            theme={{ colors: { primary: '#d07440' } }}
+                            left={() => <MaterialCommunityIcons name="city" size={24} color="black" />}>
+                            {SemtData.map((item, index) => (
+                                <List.Item
+                                    key={index}
+                                    title={item.name}
+                                    onPress={() => {
+                                        alert(item.name)
+                                    }}
+                                />
+                            ))}
+
+                        </List.Accordion>
+                    </List.Section>
+
+                    <View style={{ width: '100%', marginTop: 30, marginBottom: 30 }}>
+                        <TouchableOpacity style={[styles.ButtonStyle, { width: '92%', backgroundColor: '#d07440' }]}>
+                            <Text style={[styles.ButtonTextStyle, { color: '#fff' }]}>Gönder</Text>
+                        </TouchableOpacity>
+
+                    </View>
+
+                </ScrollView>
+                :
+                <View style={{ marginTop: 50, padding: 20 , height:"60%", width:'100%', justifyContent:'center'}}>
+                    <Text style={styles.DangerMessageTitle}>Yapayzeka Puanlamasını görmek için lütfen üye olunuz.</Text>
+
+                    <View style={styles.ButtonContainer}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate('LoginRegister', {
+                                    name: 'Login'
+                                })
+                            }}
+                            style={styles.ButtonStyleAIPart}>
+                            <Text style={styles.ButtonTextStyleAIPart}>Giriş Yap</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate('LoginRegister', {
+                                    name: 'Register'
+                                })
+                            }}
+                            style={[styles.ButtonStyleAIPart, { backgroundColor: '#fff', borderWidth: 2, borderColor: '#d07440' }]}>
+                            <Text style={[styles.ButtonTextStyleAIPart, { color: '#d07440' }]}>Kayıt Ol</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <List.Section style={{ marginLeft: 20 }}>
-                    <List.Accordion
-                        title={getKategori}
-                        theme={{ colors: { primary: '#d07440' } }}
-                        left={() => <MaterialIcons name="category" size={24} color="black" />}
-                    >
-                        {KategoriData.map((item, index) => (
-                            <List.Item
-                                title={item.name}
-                                key={index}
-                                onPress={() => {
-                                    alert(item.name)
-                                }} />
-                        ))}
-                    </List.Accordion>
+            }
 
-                    <List.Accordion
-                        title={getSemt}
-                        theme={{ colors: { primary: '#d07440' } }}
-                        left={() => <MaterialCommunityIcons name="city" size={24} color="black" />}>
-                        <List.Item title="First item" />
-                        <List.Item title="Second item" />
-                    </List.Accordion>
-                </List.Section>
-
-                <View style={{ width: '100%', marginTop: 30, marginBottom: 30 }}>
-                    <TouchableOpacity style={[styles.ButtonStyle, { width: '92%', backgroundColor: '#d07440' }]}>
-                        <Text style={[styles.ButtonTextStyle, { color: '#fff' }]}>Gönder</Text>
-                    </TouchableOpacity>
-
-                </View>
-
-            </ScrollView>
         </View>
     )
 }
@@ -147,5 +289,32 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center'
-    }
+    },
+    DangerMessageTitle: {
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: 'bold',
+
+    },
+
+    ButtonContainer: {
+        marginTop: 50,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+        width: '100%',
+    },
+    ButtonStyleAIPart: {
+        padding: 10,
+        backgroundColor: '#d07440',
+        borderRadius: 8,
+        elevation: 10,
+    },
+    ButtonTextStyleAIPart: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+    
 })

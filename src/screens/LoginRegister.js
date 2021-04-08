@@ -2,17 +2,32 @@ import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, Dimensions } from 'react-native'
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
+import {Global} from '../../Global'
+
 export function LoginRegister({ route, navigation }) {
 
     const { name } = route.params;
 
     const [getLoginMail, setLoginMail] = React.useState('')
-    const [getLoginPassword, setLoginPassword] = React.useState()
+    const [getLoginPassword, setLoginPassword] = React.useState('')
 
     const [getRegisterMail, setRegisterMail] = React.useState('')
     const [getName, setName] = React.useState('');
-    const [getRegisterPassword, setRegisterPassword] = React.useState()
-    const [getRegisterPasswordAgain, setRegisterPasswordAgain] = React.useState()
+    const [getRegisterPassword, setRegisterPassword] = React.useState('')
+    const [getRegisterPasswordAgain, setRegisterPasswordAgain] = React.useState('')
+
+    React.useEffect(() => {
+
+        const unsubscribe = navigation.addListener('focus', () => {
+            console.log(Global.isLogin)
+
+        });
+
+        return () => {
+            unsubscribe;
+        };
+    }, [navigation]);
+
 
     return (
         <View style={styles.Container}>
@@ -67,16 +82,19 @@ export function LoginRegister({ route, navigation }) {
                         </View>
 
                         <View style={{ width: '100%', marginTop: 30 }}>
-                            <TouchableOpacity style={styles.ButtonStyle}>
+                            <TouchableOpacity 
+                                onPress={()=>{
+                                    Global.isLogin = true;
+                                    navigation.navigate('Main',{
+                                        isLogin:true
+                                    })
+                                }}
+                                style={styles.ButtonStyle}>
                                 <Text style={styles.ButtonTextStyle}>Giriş Yap</Text>
                             </TouchableOpacity>
                         </View>
 
                     </View>
-
-
-
-
 
                 </View>
                 :
@@ -140,7 +158,18 @@ export function LoginRegister({ route, navigation }) {
                     </View>
 
                     <View style={{ width: '100%', marginTop: 30 }}>
-                        <TouchableOpacity style={[styles.ButtonStyle,{width:'92%', backgroundColor:'#d07440'}]}>
+                        <TouchableOpacity 
+                            onPress={()=>{
+                                if(getRegisterMail === "" || getName === "" || getRegisterPassword === "" || getRegisterPasswordAgain ===""){
+                                    alert('Lutfen gerekli alanlari doldurunuz')
+                                }
+                                else{
+                                    navigation.navigate('LoginRegister',{
+                                        name:"Login"
+                                    })
+                                }
+                            }}
+                            style={[styles.ButtonStyle,{width:'92%', backgroundColor:'#d07440'}]}>
                             <Text style={[styles.ButtonTextStyle, {color:'#fff'}]}>Kayıt Ol</Text>
                         </TouchableOpacity>
 

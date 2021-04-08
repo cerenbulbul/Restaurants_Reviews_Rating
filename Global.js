@@ -5,8 +5,8 @@ import { StyleSheet, Text, View, Button, TouchableOpacity, Switch, NativeModules
 
 export class Global {
     static Data;
-
-  
+    static SelectedItem;
+    static isLogin = false;
   
   }
   
