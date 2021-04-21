@@ -8,6 +8,7 @@ import {
 import ColorHelper from '../Helper/Color'
 import { ListItem } from 'react-native-elements'
 import { Global } from '../../Global';
+import AsyncStorage from '@react-native-community/async-storage'
 
 const drawerItemList = [
     {
@@ -66,6 +67,34 @@ export function CustomDrawerContent(props, navigation) {
         </TouchableOpacity>;
     };
 
+    const [isUser, setUser] = React.useState(false)
+    const getUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('USER');
+            console.log(value)
+            if (value === null) {
+                setUser(false)
+            }
+            else {
+                setUser(true)
+            }
+        } catch (e) {
+            console.log('Failed to save the data to the storage')
+        }
+    }
+
+    const removeUser = async () => {
+        try {
+            await AsyncStorage.removeItem('USER')
+            //console.log('Data successfully saved')
+        } catch (e) {
+            console.log('Failed to remove user')
+        }
+    }
+
+    React.useEffect(() => {
+        getUser();
+      }, []);
 
     return (
         <ScrollView style={{ backgroundColor: '#fff' }}>
@@ -116,6 +145,8 @@ export function CustomDrawerContent(props, navigation) {
                     <View style={{ width: '100%' }}>
                         <TouchableOpacity
                             onPress={() => {
+                                Global.isLogin = false;
+                                removeUser();
                                 props.navigation.navigate('LoginRegister', {
                                     name: 'Login'
                                 })

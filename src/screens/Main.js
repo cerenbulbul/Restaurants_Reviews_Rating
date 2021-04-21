@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Platform } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Platform, Touchable } from 'react-native'
 import { SearchBar, Tabs, Card, CheckBox, ListItem } from "react-native-elements";
 import AsyncStorage from '@react-native-community/async-storage'
 import RBSheet from "react-native-raw-bottom-sheet";
@@ -21,8 +21,8 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-export function Main({route, navigation }) {
-    const {isLogin} = route.params;
+export function Main({ route, navigation }) {
+    const { isLogin } = route.params;
     const refRBSheet = useRef();
     const [searchValue, setSearchValue] = React.useState('');
     const [getLoader, setLoader] = React.useState(false);
@@ -44,31 +44,80 @@ export function Main({route, navigation }) {
         }
     }
 
-    const getDataAvaible = async () => {
+    const saveSelectedData = async (data) => {
         try {
-            const ref = firebase.firestore().collection("restaurants")
-            ref.onSnapshot(querySnapshot => {
-                const list = [];
-                querySnapshot.forEach(doc => {
-                    const { restaurant, grade } = doc.data();
-                    list.push({
-                        id: doc.id,
-                        grade,
-                        restaurant,
-
-                    });
-                });
-                setData(list);
-                Global.Data = list;
-                search(searchValue, list)
-                console.log(list)
-                setLoadingForSearch(false);
-                saveData();
-            });
+            const value = await AsyncStorage.getItem('SELECTED_ITEM');
+            console.log(value)
+            if (value === null) {
+                await AsyncStorage.setItem('SELECTED_ITEM', JSON.stringify(data))
+                console.log('Data successfully saved')
+            }
+            else {
+                await AsyncStorage.removeItem('SELECTED_ITEM')
+                await AsyncStorage.setItem('SELECTED_ITEM', JSON.stringify(data))
+                console.log('Data successfully saved')
+            }
         } catch (e) {
             console.log('Failed to save the data to the storage')
         }
     }
+
+    const removeData = async () => {
+        try {
+            await AsyncStorage.removeItem('DATA')
+            //console.log('Data successfully saved')
+        } catch (e) {
+            console.log('Failed to remove user')
+        }
+    }
+
+    const getDataAvaible = async () => {
+        try {
+            const value = await AsyncStorage.getItem('DATA');
+            console.log(value)
+            if (value === null) {
+                const ref = firebase.firestore().collection("restaurants")
+                ref.onSnapshot(querySnapshot => {
+                    const list = [];
+                    querySnapshot.forEach(doc => {
+                        const { restaurant, grade, address, website, location, logo, Facebook, Foursquare, Google, Tripadvisor, Zomato } = doc.data();
+                        list.push({
+                            id: doc.id,
+                            grade,
+                            restaurant,
+                            address,
+                            website,
+                            location,
+                            logo,
+                            Facebook,
+                            Foursquare,
+                            Google,
+                            Tripadvisor,
+                            Zomato
+                        });
+                    });
+                    setData(list);
+                    Global.Data = list;
+                    //search(searchValue, list)
+                    console.log(list)
+                    setLoadingForSearch(false);
+                    if (list !== undefined) {
+                        saveData(list);
+                        setLoadingForSearch(false)
+                    }
+
+                });
+            }
+            else {
+                setData(JSON.parse(value));
+            }
+
+        } catch (e) {
+            console.log('Failed to save the data to the storage')
+        }
+    }
+
+
 
     React.useEffect(() => {
 
@@ -120,7 +169,7 @@ export function Main({route, navigation }) {
                         onChangeText={setSearchValue}
                         onSubmitEditing={() => {
                             setLoader(true);
-                            getDataAvaible();
+                            //getDataAvaible();
                         }}
                         showLoading={true}
                     />
@@ -129,29 +178,33 @@ export function Main({route, navigation }) {
                         <ActivityIndicator size="large" color="#000" />
                     }
 
-                    {getData.filter((x) => x.restaurant.includes(searchValue)).map(
-                        (item, i) => (
-                            <ListItem
-                                key={i}
-                                bottomDivider
-                                button
-                                onPress={() => {
-                                    Global.SelectedItem = item;
-                                    console.log(item)
-                                    navigation.navigate('RestoranScore')
-                                    refRBSheet.current.close()
-                                }}
-                            >
+                    {getData !== undefined &&
+                        <>
+                            {getData.filter((x) => x.restaurant.includes(searchValue)).map(
+                                (item, i) => (
+                                    <ListItem
+                                        key={i}
+                                        bottomDivider
+                                        button
+                                        onPress={() => {
+                                            Global.SelectedItem = item;
+                                            console.log(item)
+                                            navigation.navigate('RestoranScore')
+                                            saveSelectedData(item)
+                                            refRBSheet.current.close()
+                                        }}
+                                    >
 
-                                <ListItem.Content>
-                                    {console.log(item)}
-                                    <ListItem.Title>{item.restaurant}</ListItem.Title>
-                                    <ListItem.Subtitle>{item.grade}</ListItem.Subtitle>
-                                </ListItem.Content>
-                                <ListItem.Chevron />
-                            </ListItem>
-                        )
-                    )}
+                                        <ListItem.Content>
+                                            {console.log(item)}
+                                            <ListItem.Title>{item.restaurant}</ListItem.Title>
+                                            <ListItem.Subtitle>{item.grade}</ListItem.Subtitle>
+                                        </ListItem.Content>
+                                        <ListItem.Chevron />
+                                    </ListItem>
+                                )
+                            )}
+                        </>}
 
                 </View>
             </RBSheet>
@@ -190,10 +243,10 @@ export function Main({route, navigation }) {
 
                 <TouchableOpacity
                     onPress={() => {
-                        //getDataAvaible();
+                        getDataAvaible();
                         setLoadingForSearch(true);
-                        //refRBSheet.current.open();
-                        navigation.navigate('RestoranScore')
+                        refRBSheet.current.open();
+                        //navigation.navigate('RestoranScore')
                     }}
                     style={styles.SearchButton}>
                     <Text style={styles.SearchButtonText}>Skorunu Gör</Text>
@@ -204,8 +257,11 @@ export function Main({route, navigation }) {
             <View style={{ marginTop: 90, backgroundColor: '#ffeade' }}>
                 <View style={styles.IconContainer}>
                     <View style={styles.IconLineContainer}>
+
                         <Image source={{ uri: 'https://image.flaticon.com/icons/png/512/2103/2103626.png' }}
                             style={{ width: 100, height: 100, }} />
+
+
                         <Image source={{ uri: 'https://www.pinclipart.com/picdir/big/355-3551153_long-flowing-piece-of-paper-with-pie-charts.png' }}
                             style={{ width: 110, height: 95, }} />
                     </View>
@@ -228,12 +284,12 @@ export function Main({route, navigation }) {
                     <Text>puanınızı hesaplasın, semt önerisi versin!</Text>
                 </Text>
 
-                {isLogin ?
+                {Global.isLogin ?
                     <View style={styles.ButtonContainer}>
                         <TouchableOpacity
                             onPress={() => {
-                                navigation.navigate('AIReport',{
-                                    isLogin:isLogin
+                                navigation.navigate('AIReport', {
+                                    isLogin: isLogin
                                 })
                             }}
                             style={styles.ButtonStyleAIPart}>

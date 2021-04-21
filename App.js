@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import auth from 'firebase/auth'
@@ -12,7 +12,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { Ionicons, FontAwesome,Entypo } from '@expo/vector-icons';
+import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
 
 import { Main } from './src/screens/Main';
 import { Restorants } from './src/screens/Restorants'
@@ -32,9 +32,28 @@ const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
   const [todos, setTodos] = React.useState([]);
+  const [getLoading, setLoading] = React.useState(true);
   //const ref = firebase.firestore().collection("restaurants")
 
+  const getUser = async () => {
+    try {
+      const value = await AsyncStorage.getItem('USER');
+      console.log(value)
+      if (value === null) {
+        Global.isLogin = false
+      }
+      else {
+        Global.isLogin = true
+      }
+      setLoading(false)
+    } catch (e) {
+      console.log('Failed to save the data to the storage')
+    }
+  }
 
+  React.useEffect(() => {
+    getUser();
+  }, []);
 
 
   const AuthStack = createStackNavigator();
@@ -49,7 +68,7 @@ export default function App() {
       <AuthStack.Screen
         name={"Main"}
         component={Main}
-        initialParams={{isLogin:false}}
+        initialParams={{ isLogin: false }}
       />
 
       <AuthStack.Screen
@@ -113,9 +132,9 @@ export default function App() {
         <Tab.Screen
           name={"AIReport"}
           component={AIReport}
-          initialParams={{isLogin:false}}
+          initialParams={{ isLogin: false }}
           options={{
-            title:"Yapayzeka Rapor",
+            title: "Yapayzeka Rapor",
             tabBarIcon: ({ color }) => (
               <Entypo name="bar-graph" size={24} color={color} />
             )
@@ -133,82 +152,89 @@ export default function App() {
 
 
     <NavigationContainer>
-      <Drawer.Navigator
-        hideStatusBar={false}
-        drawerContent={props => <CustomDrawerContent {...props} />}
-        headerShown={true}
-        initialRouteName="Tab"
-        drawerContentOptions={{
-          activeTintColor: '#2e3f6e',
-          itemStyle: {
-            marginVertical: 10
-          },
-        }}
-        drawerType="front"
-      >
-
-
-        <Drawer.Screen
-          name="Tab"
-          component={TabScreen}
-          options={{
-            headerShown: true,
-            headerTitle: () => (
-              <Text style={{
-                fontSize: 16,
-                fontWeight: 'bold'
-              }}>Restoran Rapor</Text>
-            ),
-            headerStyle: {
-              backgroundColor: '#fff',
-
+      {getLoading ?
+        <ActivityIndicator size="large" color="#000" />
+        :
+        <Drawer.Navigator
+          hideStatusBar={false}
+          drawerContent={props => <CustomDrawerContent {...props} />}
+          headerShown={true}
+          initialRouteName="Tab"
+          drawerContentOptions={{
+            activeTintColor: '#2e3f6e',
+            itemStyle: {
+              marginVertical: 10
             },
-            headerTitleStyle: {
-              fontWeight: '500',
-              fontSize: 24
-            },
-            headerRight: () => (
-              <TouchableOpacity
-                style={{ marginRight: 20 }}>
-                <Ionicons name="cog" size={32} color="#222" />
-              </TouchableOpacity>
-            ),
-          }}>
-
-        </Drawer.Screen>
-
-        <Drawer.Screen
-          options={{
-            headerShown: true,
-            headerTitle: () => (
-              <Text style={{
-                fontSize: 16,
-                fontWeight: 'bold'
-              }}>Restoran Rapor</Text>
-            ),
-            headerStyle: {
-              backgroundColor: '#fff',
-
-            },
-            headerTitleStyle: {
-              fontWeight: '500',
-              fontSize: 24
-            },
-            headerRight: () => (
-              <TouchableOpacity
-                style={{ marginRight: 20 }}>
-                <Ionicons name="cog" size={32} color="#222" />
-              </TouchableOpacity>
-            ),
           }}
-          name="LoginRegister"
-          component={LoginRegister}>
-
-        </Drawer.Screen>
+          drawerType="front"
+        >
 
 
+          <Drawer.Screen
+            name="Tab"
+            component={TabScreen}
+            options={{
+              headerShown: true,
+              headerTitle: () => (
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: 'bold'
+                }}>Restoran Rapor</Text>
+              ),
+              headerStyle: {
+                backgroundColor: '#fff',
 
-      </Drawer.Navigator>
+              },
+              headerTitleStyle: {
+                fontWeight: '500',
+                fontSize: 24
+              },
+              headerRight: () => (
+                <TouchableOpacity
+                  style={{ marginRight: 20 }}>
+                  <Ionicons name="cog" size={32} color="#222" />
+                </TouchableOpacity>
+              ),
+            }}>
+
+          </Drawer.Screen>
+
+          <Drawer.Screen
+            options={{
+              headerShown: true,
+              headerTitle: () => (
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: 'bold'
+                }}>Restoran Rapor</Text>
+              ),
+              headerStyle: {
+                backgroundColor: '#fff',
+
+              },
+              headerTitleStyle: {
+                fontWeight: '500',
+                fontSize: 24
+              },
+              headerRight: () => (
+                <TouchableOpacity
+                  style={{ marginRight: 20 }}>
+                  <Ionicons name="cog" size={32} color="#222" />
+                </TouchableOpacity>
+              ),
+            }}
+            name="LoginRegister"
+            component={LoginRegister}>
+
+          </Drawer.Screen>
+
+
+
+        </Drawer.Navigator>
+
+      }
+
+
     </NavigationContainer>
 
 

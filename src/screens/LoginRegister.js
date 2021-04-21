@@ -1,8 +1,14 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, Dimensions } from 'react-native'
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import auth from 'firebase/auth'
+import db from 'firebase/database'
+import AsyncStorage from '@react-native-community/async-storage'
 
-import {Global} from '../../Global'
+import { Global } from '../../Global'
+
 
 export function LoginRegister({ route, navigation }) {
 
@@ -27,6 +33,45 @@ export function LoginRegister({ route, navigation }) {
             unsubscribe;
         };
     }, [navigation]);
+
+    const createUser = async (email, password) => {
+        try {
+            let response = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            if (response) {
+                console.log("Basarili")
+                alert("Kaydınız yapıldı, giriş yapabilirsiniz.")
+                navigation.navigate('LoginRegister', {
+                    name: "Login"
+                })
+            }
+        } catch (e) {
+            console.error(e.message);
+        }
+    }
+
+    const saveUser = async () => {
+        try {
+            const value = await AsyncStorage.setItem('USER', "user");
+        } catch (e) {
+            console.log('Failed to save the data to the storage')
+        }
+    }
+
+    const loginUser = async (email, password) => {
+        try {
+            firebase.auth().signInWithEmailAndPassword(email, password);
+            firebase.auth().onAuthStateChanged(user => {
+                saveUser();
+                alert("Basariyla Giris yapildi");
+                navigation.navigate("Main", {
+                    isLogin: true
+                })
+                Global.isLogin = true
+            })
+        } catch (error) {
+            console.log(error.toString(error));
+        }
+    }
 
 
     return (
@@ -82,12 +127,10 @@ export function LoginRegister({ route, navigation }) {
                         </View>
 
                         <View style={{ width: '100%', marginTop: 30 }}>
-                            <TouchableOpacity 
-                                onPress={()=>{
-                                    Global.isLogin = true;
-                                    navigation.navigate('Main',{
-                                        isLogin:true
-                                    })
+                            <TouchableOpacity
+                                onPress={() => {
+                                    loginUser(getLoginMail, getLoginPassword)
+
                                 }}
                                 style={styles.ButtonStyle}>
                                 <Text style={styles.ButtonTextStyle}>Giriş Yap</Text>
@@ -107,7 +150,7 @@ export function LoginRegister({ route, navigation }) {
                         }} />
 
                     <View style={{ marginTop: 20 }}>
-                        <View style={[styles.TextInputContainer, {backgroundColor:'#fff', width:'92%'}]}>
+                        <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
                             <Ionicons name="mail" size={24} color="black" style={{ alignSelf: 'center' }} />
                             <TextInput
                                 style={styles.InputStyle}
@@ -119,7 +162,7 @@ export function LoginRegister({ route, navigation }) {
                             />
                         </View>
 
-                        <View style={[styles.TextInputContainer, {backgroundColor:'#fff', width:'92%'}]}>
+                        <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
                             <FontAwesome name="user" size={24} color="black" style={{ alignSelf: 'center' }} />
                             <TextInput
                                 style={styles.InputStyle}
@@ -131,7 +174,7 @@ export function LoginRegister({ route, navigation }) {
                             />
                         </View>
 
-                        <View style={[styles.TextInputContainer, {backgroundColor:'#fff', width:'92%'}]}>
+                        <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
                             <Ionicons name="key" size={24} color="black" style={{ alignSelf: 'center' }} />
                             <TextInput
                                 style={styles.InputStyle}
@@ -144,7 +187,7 @@ export function LoginRegister({ route, navigation }) {
                             />
                         </View>
                     </View>
-                    <View style={[styles.TextInputContainer, {backgroundColor:'#fff', width:'92%'}]}>
+                    <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
                         <Ionicons name="key" size={24} color="black" style={{ alignSelf: 'center' }} />
                         <TextInput
                             style={styles.InputStyle}
@@ -158,29 +201,37 @@ export function LoginRegister({ route, navigation }) {
                     </View>
 
                     <View style={{ width: '100%', marginTop: 30 }}>
-                        <TouchableOpacity 
-                            onPress={()=>{
-                                if(getRegisterMail === "" || getName === "" || getRegisterPassword === "" || getRegisterPasswordAgain ===""){
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (getRegisterMail === "" || getName === "" || getRegisterPassword === "" || getRegisterPasswordAgain === "") {
                                     alert('Lutfen gerekli alanlari doldurunuz')
                                 }
-                                else{
-                                    navigation.navigate('LoginRegister',{
-                                        name:"Login"
-                                    })
+                                else {
+                                    if (getRegisterPassword.length < 6) {
+                                        alert("Şifreniz en az 6 haneli olmalıdır.")
+                                    }
+                                    else if (getRegisterPassword !== getRegisterPasswordAgain) {
+                                        alert("Şifreler aynı değildir.")
+                                    }
+                                    else {
+                                        createUser(getRegisterMail, getRegisterPassword)
+                                    }
+
+
                                 }
                             }}
-                            style={[styles.ButtonStyle,{width:'92%', backgroundColor:'#d07440'}]}>
-                            <Text style={[styles.ButtonTextStyle, {color:'#fff'}]}>Kayıt Ol</Text>
+                            style={[styles.ButtonStyle, { width: '92%', backgroundColor: '#d07440' }]}>
+                            <Text style={[styles.ButtonTextStyle, { color: '#fff' }]}>Kayıt Ol</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity 
-                            onPress={()=>{
-                                navigation.navigate('LoginRegister',{
-                                    name:"Login"
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate('LoginRegister', {
+                                    name: "Login"
                                 })
                             }}
-                            style={{marginTop:20,width:'100%'}}>
-                            <Text style={{textAlign:'center', fontSize:16}}>Zaten Hesabım Var</Text>
+                            style={{ marginTop: 20, width: '100%' }}>
+                            <Text style={{ textAlign: 'center', fontSize: 16 }}>Zaten Hesabım Var</Text>
                         </TouchableOpacity>
 
                     </View>

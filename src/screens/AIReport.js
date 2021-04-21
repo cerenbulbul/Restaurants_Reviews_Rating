@@ -166,7 +166,7 @@ export function AIReport({route, navigation }) {
                 Restoran Bilgilerini Gör
             </Text>
 
-            {isLogin ?
+            {Global.isLogin ?
                 <ScrollView style={{ marginTop: 50 }}>
                     <View style={[styles.TextInputContainer, { backgroundColor: '#fff', width: '92%' }]}>
                         <Ionicons name="restaurant" size={24} color="black" style={{ alignSelf: 'center' }} />
